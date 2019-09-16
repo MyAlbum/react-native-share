@@ -174,49 +174,26 @@ class RNShare {
     return new Promise((resolve, reject) => {
       requireAndAskPermissions(options)
         .then(() => {
-          if (Platform.OS === 'ios' && !options.urls) {
-            // Handle for single file share
-            ActionSheetIOS.showShareActionSheetWithOptions(
-              options,
-              error => {
-                return reject({ error: error });
-              },
-              (success, activityType) => {
-                if (success) {
-                  return resolve({
-                    app: activityType,
-                  });
-                } else if (options.failOnCancel === false) {
-                  return resolve({
-                    dismissedAction: true,
-                  });
-                } else {
-                  reject(new Error('User did not share'));
-                }
-              },
-            );
-          } else {
-            NativeModules.RNShare.open(
-              options,
-              e => {
-                return reject({ error: e });
-              },
-              (success, activityType) => {
-                if (success) {
-                  return resolve({
-                    app: activityType,
-                    message: activityType,
-                  });
-                } else if (options.failOnCancel === false) {
-                  return resolve({
-                    dismissedAction: true,
-                  });
-                } else {
-                  reject(new Error('User did not share'));
-                }
-              },
-            );
-          }
+          NativeModules.RNShare.open(
+            options,
+            e => {
+              return reject({ error: e });
+            },
+            (success, activityType) => {
+              if (success) {
+                return resolve({
+                  app: activityType,
+                  message: activityType,
+                });
+              } else if (options.failOnCancel === false) {
+                return resolve({
+                  dismissedAction: true,
+                });
+              } else {
+                reject(new Error('User did not share'));
+              }
+            },
+          );
         })
         .catch(e => reject(e));
     });
